@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Paper } from '@mui/material';
+import { Container, Typography, Box, Paper, IconButton, Tooltip } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
 import TaskForm from './TaskForm';
 import TaskList from './TaskList';
 import TaskDetail from './TaskDetail';
@@ -78,9 +79,23 @@ const App = () => {
     });
   };
 
+  // Handle navigation to Google search page
+  const navigateToGoogle = () => {
+    window.open('https://www.google.com/', '_blank');
+  };
+
   return (
     <Container className="container">
-      <Box sx={{ my: 4 }}>
+      <Box sx={{ position: 'relative', my: 4 }}>
+        <Tooltip title="Go to Google search page">
+          <IconButton 
+            color="primary" 
+            sx={{ position: 'absolute', top: 0, left: 0 }}
+            onClick={navigateToGoogle}
+          >
+            <HomeIcon />
+          </IconButton>
+        </Tooltip>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Task & Bookmark Manager
         </Typography>
@@ -102,7 +117,8 @@ const App = () => {
           <Paper elevation={3} sx={{ p: 3 }}>
             <TaskList 
               tasks={tasks} 
-              onSelectTask={handleTaskSelect} 
+              onSelectTask={handleTaskSelect}
+              onUpdateTask={updateTask}
             />
           </Paper>
         )}

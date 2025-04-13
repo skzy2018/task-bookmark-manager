@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   List, 
   ListItem, 
@@ -15,7 +15,7 @@ import {
   DoNotDisturb as DoNotDisturbIcon
 } from '@mui/icons-material';
 
-const TaskList = ({ tasks, onSelectTask }) => {
+const TaskList = ({ tasks, onSelectTask, onUpdateTask }) => {
   if (tasks.length === 0) {
     return (
       <Typography variant="body1" align="center" sx={{ py: 4 }}>
@@ -23,6 +23,32 @@ const TaskList = ({ tasks, onSelectTask }) => {
       </Typography>
     );
   }
+
+  // Get next status in the cycle: not_started -> in_progress -> completed -> not_started
+  const getNextStatus = (currentStatus) => {
+    switch(currentStatus) {
+      case 'not_started':
+        return 'in_progress';
+      case 'in_progress':
+        return 'completed';
+      case 'completed':
+        return 'not_started';
+      default:
+        return 'not_started';
+    }
+  };
+
+  // Handle status change
+  const handleStatusChange = (e, task) => {
+    e.stopPropagation(); // Prevent task selection
+    const nextStatus = getNextStatus(task.status);
+    if (onUpdateTask) {
+      onUpdateTask({
+        ...task,
+        status: nextStatus
+      });
+    }
+  };
 
   // Get status display info
   const getStatusInfo = (status) => {
@@ -117,6 +143,9 @@ const TaskList = ({ tasks, onSelectTask }) => {
                         color={statusInfo.color}
                         icon={statusInfo.icon}
                         className="status-badge"
+                        onClick={(e) => handleStatusChange(e, task)}
+                        clickable
+                        sx={{ cursor: 'pointer' }}
                       />
                     </Box>
                   }
