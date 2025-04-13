@@ -1,0 +1,37 @@
+/* Basic styles for the Task & Bookmark Manager extension */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.task-item {
+  transition: background-color 0.2s;
+}
+
+.completed-task {
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+.deadline-past {
+  color: #f44336;
+}
+
+.deadline-upcoming {
+  color: #ff9800;
+}
+
+.deadline-far {
+  color: #4caf50;
+}
+
+.status-badge {
+  margin-left: 8px;
+}
