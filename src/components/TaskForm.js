@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Typography, 
   TextField, 
@@ -24,6 +24,14 @@ const TaskForm = ({ addTask }) => {
   const [formData, setFormData] = useState(initialState);
   const [urlInput, setUrlInput] = useState('');
   const [urlTitleInput, setUrlTitleInput] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Check if form should be expanded whenever title changes
+  useEffect(() => {
+    if (formData.title.trim() !== '') {
+      setIsExpanded(true);
+    }
+  }, [formData.title]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,6 +47,7 @@ const TaskForm = ({ addTask }) => {
     
     addTask(formData);
     setFormData(initialState);
+    setIsExpanded(false);
   };
 
   const handleAddUrl = () => {
@@ -90,123 +99,128 @@ const TaskForm = ({ addTask }) => {
               onChange={handleChange}
               required
               variant="outlined"
+              placeholder="Enter task title"
             />
           </Grid>
           
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              multiline
-              rows={3}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Deadline"
-              name="deadline"
-              type="date"
-              value={formData.deadline}
-              onChange={handleChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel id="status-label">Status</InputLabel>
-              <Select
-                labelId="status-label"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                label="Status"
-              >
-                <MenuItem value="not_started">Not Started</MenuItem>
-                <MenuItem value="in_progress">In Progress</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          
-          <Grid item xs={12}>
-            <Typography variant="subtitle1" gutterBottom>
-              Related URLs
-            </Typography>
-            
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={5}>
+          {isExpanded && (
+            <>
+              <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="URL"
-                  value={urlInput}
-                  onChange={(e) => setUrlInput(e.target.value)}
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
                   variant="outlined"
-                  placeholder="https://example.com"
                 />
               </Grid>
               
-              <Grid item xs={12} sm={5}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="URL Title (optional)"
-                  value={urlTitleInput}
-                  onChange={(e) => setUrlTitleInput(e.target.value)}
+                  label="Deadline"
+                  name="deadline"
+                  type="date"
+                  value={formData.deadline}
+                  onChange={handleChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                   variant="outlined"
-                  placeholder="Example Website"
                 />
               </Grid>
               
-              <Grid item xs={12} sm={2}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  onClick={handleAddUrl}
-                  startIcon={<AddIcon />}
-                  sx={{ height: '100%' }}
-                >
-                  Add
-                </Button>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel id="status-label">Status</InputLabel>
+                  <Select
+                    labelId="status-label"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    label="Status"
+                  >
+                    <MenuItem value="not_started">Not Started</MenuItem>
+                    <MenuItem value="in_progress">In Progress</MenuItem>
+                    <MenuItem value="completed">Completed</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
-            </Grid>
-          </Grid>
-          
-          {formData.urls.length > 0 && (
-            <Grid item xs={12}>
-              <Box sx={{ mt: 1 }}>
-                {formData.urls.map((url, index) => (
-                  <Box key={index} sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    mb: 1,
-                    p: 1,
-                    borderRadius: 1,
-                    bgcolor: 'rgba(0, 0, 0, 0.05)'
-                  }}>
-                    <Typography variant="body2" sx={{ flex: 1, overflowWrap: 'break-word' }}>
-                      {url.title} - {url.url}
-                    </Typography>
-                    <Button 
-                      size="small" 
-                      color="error" 
-                      onClick={() => handleRemoveUrl(index)}
+              
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Related URLs
+                </Typography>
+                
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={5}>
+                    <TextField
+                      fullWidth
+                      label="URL"
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      variant="outlined"
+                      placeholder="https://example.com"
+                    />
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={5}>
+                    <TextField
+                      fullWidth
+                      label="URL Title (optional)"
+                      value={urlTitleInput}
+                      onChange={(e) => setUrlTitleInput(e.target.value)}
+                      variant="outlined"
+                      placeholder="Example Website"
+                    />
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={2}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={handleAddUrl}
+                      startIcon={<AddIcon />}
+                      sx={{ height: '100%' }}
                     >
-                      Remove
+                      Add
                     </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
+              
+              {formData.urls.length > 0 && (
+                <Grid item xs={12}>
+                  <Box sx={{ mt: 1 }}>
+                    {formData.urls.map((url, index) => (
+                      <Box key={index} sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        mb: 1,
+                        p: 1,
+                        borderRadius: 1,
+                        bgcolor: 'rgba(0, 0, 0, 0.05)'
+                      }}>
+                        <Typography variant="body2" sx={{ flex: 1, overflowWrap: 'break-word' }}>
+                          {url.title} - {url.url}
+                        </Typography>
+                        <Button 
+                          size="small" 
+                          color="error" 
+                          onClick={() => handleRemoveUrl(index)}
+                        >
+                          Remove
+                        </Button>
+                      </Box>
+                    ))}
                   </Box>
-                ))}
-              </Box>
-            </Grid>
+                </Grid>
+              )}
+            </>
           )}
           
           <Grid item xs={12}>
