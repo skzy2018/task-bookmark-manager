@@ -12,7 +12,8 @@
   },
   "permissions": [
     "bookmarks",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "icons": {
     "16": "images/icon16.png",

@@ -6,6 +6,7 @@ A Chrome extension that helps manage tasks and save associated URLs as bookmarks
 
 - Create and manage tasks with title, description, deadline, and status
 - Associate relevant URLs with each task
+- Automatic page title extraction for URLs (when no title is provided)
 - Track task status (Not Started, In Progress, Completed)
 - Automatic bookmark creation when tasks are completed
 - Modern UI built with Material UI components
@@ -15,6 +16,7 @@ A Chrome extension that helps manage tasks and save associated URLs as bookmarks
 
 - **Productivity**: Organize your web browsing around specific tasks and goals
 - **Focus**: Reduce aimless browsing by associating URLs with specific purposes
+- **Efficiency**: Auto-fetches webpage titles when adding URLs to tasks
 - **Organization**: Automatically organize your bookmarks based on completed tasks
 - **Privacy**: All data is stored locally, ensuring your information stays on your device
 
@@ -38,7 +40,9 @@ A Chrome extension that helps manage tasks and save associated URLs as bookmarks
 
 - Click the extension icon in the Chrome toolbar to open the task manager
 - Add a new task with a title, description, deadline, and status
-- Associate relevant URLs with the task
+- Associate relevant URLs with the task (titles are automatically fetched if not provided)
+- Quickly change task status by clicking on the status badge in the task list
+- Access Google search via the home icon in the top-left corner
 - Edit tasks by clicking on them in the task list
 - Mark tasks as completed to automatically save associated URLs as bookmarks
 - Bookmarks are saved in a folder named after the task and creation date

@@ -50,7 +50,33 @@ const TaskForm = ({ addTask }) => {
     setIsExpanded(false);
   };
 
-  const handleAddUrl = () => {
+  // Function to fetch page title from URL
+  const fetchPageTitle = async (url) => {
+    return new Promise((resolve) => {
+      // Create a new tab to fetch the title
+      chrome.tabs.create({ url, active: false }, (tab) => {
+        // We'll listen for the tab to complete loading
+        const listener = (tabId, changeInfo) => {
+          // Once the tab is complete and it's our tab
+          if (tabId === tab.id && changeInfo.status === 'complete') {
+            // Get the tab's title
+            chrome.tabs.get(tab.id, (tabInfo) => {
+              // Remove the listener and close the tab
+              chrome.tabs.onUpdated.removeListener(listener);
+              chrome.tabs.remove(tab.id);
+              // Return the title
+              resolve(tabInfo.title || url);
+            });
+          }
+        };
+        
+        // Add the listener
+        chrome.tabs.onUpdated.addListener(listener);
+      });
+    });
+  };
+
+  const handleAddUrl = async () => {
     if (!urlInput.trim()) return;
     
     // Basic URL validation
@@ -59,9 +85,21 @@ const TaskForm = ({ addTask }) => {
       url = 'https://' + url;
     }
     
+    let title = urlTitleInput.trim();
+    
+    // If no title is provided, try to fetch it from the page
+    if (!title) {
+      try {
+        title = await fetchPageTitle(url);
+      } catch (error) {
+        console.error("Error fetching page title:", error);
+        title = url; // Fallback to URL if error
+      }
+    }
+    
     const newUrl = {
       url,
-      title: urlTitleInput.trim() || url
+      title: title
     };
     
     setFormData({
