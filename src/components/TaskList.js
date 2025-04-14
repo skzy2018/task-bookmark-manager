@@ -21,12 +21,15 @@ import {
   CheckCircle as CheckCircleIcon,
   Schedule as ScheduleIcon,
   DoNotDisturb as DoNotDisturbIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  OpenInNew as OpenInNewIcon
 } from '@mui/icons-material';
 
 const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [expandedTaskId, setExpandedTaskId] = useState(null);
   if (tasks.length === 0) {
     return (
       <Typography variant="body1" align="center" sx={{ py: 4 }}>
@@ -80,7 +83,27 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
       onDeleteTask(taskToDelete.id);
       setDeleteConfirmOpen(false);
       setTaskToDelete(null);
+      // Also clear expanded state if we're deleting the expanded item
+      if (expandedTaskId === taskToDelete.id) {
+        setExpandedTaskId(null);
+      }
     }
+  };
+  
+  // Handle task click to expand/collapse
+  const handleTaskClick = (e, taskId) => {
+    e.stopPropagation();
+    if (expandedTaskId === taskId) {
+      setExpandedTaskId(null);  // Collapse if already expanded
+    } else {
+      setExpandedTaskId(taskId); // Expand this task
+    }
+  };
+  
+  // Handle edit button click to navigate to full detail view
+  const handleEditClick = (e, task) => {
+    e.stopPropagation(); // Prevent expanding/collapsing
+    onSelectTask(task);  // Navigate to task detail view
   };
 
   // Get status display info
@@ -155,7 +178,7 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
               <ListItem 
                 alignItems="flex-start"
                 button 
-                onClick={() => onSelectTask(task)}
+                onClick={(e) => handleTaskClick(e, task.id)}
                 className={`task-item ${task.status === 'completed' ? 'completed-task' : ''}`}
                 sx={{ 
                   borderRadius: 1,
@@ -171,6 +194,18 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
                         {task.title}
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Tooltip title="Edit task details">
+                          <IconButton 
+                            edge="end" 
+                            aria-label="edit" 
+                            size="small"
+                            color="primary"
+                            onClick={(e) => handleEditClick(e, task)}
+                            sx={{ mr: 1 }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
                         <Chip 
                           size="small"
                           label={statusInfo.label}
@@ -206,7 +241,7 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
                             display: '-webkit-box',
                             overflow: 'hidden',
                             WebkitBoxOrient: 'vertical',
-                            WebkitLineClamp: 1,
+                            WebkitLineClamp: expandedTaskId === task.id ? 5 : 1,
                             mt: 0.5,
                             mb: 1
                           }}
@@ -228,10 +263,51 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
                         </Box>
                       )}
                       
-                      {task.urls && task.urls.length > 0 && (
+                      {/* Show URL list when expanded, otherwise just show count */}
+                      {task.urls && task.urls.length > 0 && expandedTaskId !== task.id && (
                         <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
                           {task.urls.length} URL{task.urls.length !== 1 ? 's' : ''} attached
                         </Typography>
+                      )}
+                      
+                      {/* Show URL list when expanded */}
+                      {expandedTaskId === task.id && task.urls && task.urls.length > 0 && (
+                        <Box sx={{ mt: 2, mb: 1 }}>
+                          <Typography variant="subtitle2" gutterBottom>
+                            Attached URLs:
+                          </Typography>
+                          <List dense sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
+                            {task.urls.map((url, idx) => (
+                              <ListItem key={idx} sx={{ py: 0.5 }}>
+                                <ListItemText 
+                                  primary={url.title} 
+                                  secondary={url.url}
+                                  primaryTypographyProps={{ variant: 'body2' }}
+                                  secondaryTypographyProps={{ 
+                                    variant: 'caption',
+                                    sx: { 
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      wordBreak: 'break-all'
+                                    }
+                                  }}
+                                />
+                                <Tooltip title="Open URL">
+                                  <IconButton 
+                                    edge="end" 
+                                    size="small" 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(url.url, '_blank');
+                                    }}
+                                  >
+                                    <OpenInNewIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Box>
                       )}
                     </React.Fragment>
                   }

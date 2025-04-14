@@ -43,6 +43,8 @@ A Chrome extension that helps manage tasks and save associated URLs as bookmarks
 - Associate relevant URLs with the task (titles are automatically fetched if not provided)
 - Quickly change task status by clicking on the status badge in the task list
 - Delete tasks directly from the list view with a confirmation dialog
+- Click on a task to expand it and view attached URLs with direct links to open them
+- Use the edit button to access the full task editing interface
 - Access Google search via the home icon in the top-left corner
 - Edit tasks by clicking on them in the task list
 - Mark tasks as completed to automatically save associated URLs as bookmarks
