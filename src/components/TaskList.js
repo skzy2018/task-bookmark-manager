@@ -281,7 +281,11 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
                               <ListItem key={idx} sx={{ py: 0.5 }}>
                                 <ListItemText 
                                   primary={url.title} 
-                                  secondary={url.url}
+                                  secondary={
+                                    <a href={url.url} target="_blank" rel="noopener noreferrer">
+                                      {url.url}
+                                    </a>
+                                  }
                                   primaryTypographyProps={{ variant: 'body2' }}
                                   secondaryTypographyProps={{ 
                                     variant: 'caption',
