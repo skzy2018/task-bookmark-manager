@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
 import { 
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
   List, 
   ListItem, 
   ListItemText, 
   Typography, 
   Chip,
   Box,
-  Divider
+  Divider,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import { 
   AccessTime as AccessTimeIcon,
   CheckCircle as CheckCircleIcon,
   Schedule as ScheduleIcon,
-  DoNotDisturb as DoNotDisturbIcon
+  DoNotDisturb as DoNotDisturbIcon,
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 
-const TaskList = ({ tasks, onSelectTask, onUpdateTask }) => {
+const TaskList = ({ tasks, onSelectTask, onUpdateTask, onDeleteTask }) => {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
   if (tasks.length === 0) {
     return (
       <Typography variant="body1" align="center" sx={{ py: 4 }}>
@@ -47,6 +58,28 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask }) => {
         ...task,
         status: nextStatus
       });
+    }
+  };
+  
+  // Open delete confirmation dialog
+  const handleDeleteConfirmOpen = (e, task) => {
+    e.stopPropagation(); // Prevent task selection
+    setTaskToDelete(task);
+    setDeleteConfirmOpen(true);
+  };
+
+  // Close delete confirmation dialog
+  const handleDeleteConfirmClose = () => {
+    setDeleteConfirmOpen(false);
+    setTaskToDelete(null);
+  };
+
+  // Handle task deletion
+  const handleDeleteTask = () => {
+    if (taskToDelete && onDeleteTask) {
+      onDeleteTask(taskToDelete.id);
+      setDeleteConfirmOpen(false);
+      setTaskToDelete(null);
     }
   };
 
@@ -137,16 +170,30 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask }) => {
                       <Typography variant="subtitle1" component="span">
                         {task.title}
                       </Typography>
-                      <Chip 
-                        size="small"
-                        label={statusInfo.label}
-                        color={statusInfo.color}
-                        icon={statusInfo.icon}
-                        className="status-badge"
-                        onClick={(e) => handleStatusChange(e, task)}
-                        clickable
-                        sx={{ cursor: 'pointer' }}
-                      />
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Chip 
+                          size="small"
+                          label={statusInfo.label}
+                          color={statusInfo.color}
+                          icon={statusInfo.icon}
+                          className="status-badge"
+                          onClick={(e) => handleStatusChange(e, task)}
+                          clickable
+                          sx={{ cursor: 'pointer', mr: 1 }}
+                        />
+                        <Tooltip title="Delete task">
+                          <IconButton 
+                            edge="end" 
+                            aria-label="delete" 
+                            size="small"
+                            color="error"
+                            onClick={(e) => handleDeleteConfirmOpen(e, task)}
+                            sx={{ ml: 0.5 }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </Box>
                   }
                   secondary={
@@ -194,6 +241,30 @@ const TaskList = ({ tasks, onSelectTask, onUpdateTask }) => {
           );
         })}
       </List>
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={handleDeleteConfirmClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Delete this task?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete "{taskToDelete?.title}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteConfirmClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteTask} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

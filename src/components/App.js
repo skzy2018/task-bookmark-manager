@@ -119,6 +119,7 @@ const App = () => {
               tasks={tasks} 
               onSelectTask={handleTaskSelect}
               onUpdateTask={updateTask}
+              onDeleteTask={deleteTask}
             />
           </Paper>
         )}
